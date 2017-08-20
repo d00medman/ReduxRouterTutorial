@@ -1,13 +1,49 @@
+import _ from 'lodash'
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
+// Link is the component which makes single page applications really possible
+import { Link } from 'react-router-dom'
+import { fetchPosts } from '../actions'
 
 class PostsIndex extends Component {
+  // componentDidMount is a lifecycle method to help the app along in the period between when the page
+    // loads and when the data for the page is returned
+  componentDidMount(){
+    this.props.fetchPosts()
+  }
+
+  renderPosts() {
+    return _.map(this.props.posts, post => {
+      return (
+        <li className="list-group-item" key={post.id}>
+          {post.title}
+        </li>
+      )
+    })
+  }
+
   render(){
     return(
       <div>
-        posts index
+        <div className="text-xs-right">
+          <Link className="btn btn-primary" to="/posts/new">
+            Add A post
+          </Link>
+        </div>
+        <h3>posts</h3>
+        <ul className="list-group">
+          {this.renderPosts()}
+        </ul>
       </div>
     )
   }
 }
 
-export default PostsIndex
+function mapStateToProps(state){
+  return { posts: state.posts}
+}
+
+// this is something of a shortcut, rather than needing to write out an entire mapStateToProps method,
+  // We can simply write this. Passing in the action creator here has the connect function do the heavy lifting of
+  // mapping state to props
+export default connect(mapStateToProps, { fetchPosts } )(PostsIndex)
