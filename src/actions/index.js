@@ -15,10 +15,11 @@ export function fetchPosts(){
   }
 }
 
-export function createPost(values) {
+export function createPost(values, callback) {
   // post requests follow largely the same syntax in axios, main difference is that there
     // is a second argument taken in for values
   const request = axios.post(`${ROOT_URL}/posts${API_KEY}`, values)
+                        .then(() => callback())
 
   return {
     type: CREATE_POST,
