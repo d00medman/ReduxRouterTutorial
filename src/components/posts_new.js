@@ -1,19 +1,29 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { createPost } from '../actions'
 
 class PostsNew extends Component {
 
   // This is the component method which will be going into the render method
   renderField(field) { // The field argument tells this function what it is targeting
+    // This is es6 decoupling syntax; it pulls the meta property off the field object, then pulls the touched
+      // and error properties off the meta property
+    const { meta: { touched, error } } = field
+    const className = `form-group ${touched && error ? 'has-danger' : ''}`
+
     return(
-      <div className="form-group">
+      <div className={className}>
         <label>{field.label}</label>
         <input
           className="form-control"
           type="text"
           {...field.input}
           />
-        {field.meta.error}
+        <div className="text-help">
+          {touched ? error : ''}
+        </div>
       </div>
     )
     // field.input is an object which contains event handlers and props, the '...' allows all of
@@ -23,7 +33,7 @@ class PostsNew extends Component {
   }
 
   onSubmit(values) {
-    console.log(values)
+    this.props.createPost(values)
   }
 
 
@@ -52,6 +62,7 @@ class PostsNew extends Component {
           component={this.renderField}
           />
         <button type="submit" className="btn btn-primary">Submit</button>
+        <Link to="/" className="btn btn-danger">Cancel</Link>
       </form>
     )
   }
@@ -83,6 +94,8 @@ export default reduxForm({
   validate, // The addition of this property causes the redux form function to be fired automatically
   // The string assigned to this form property needs to be unique
   form: 'PostsNewForm'
-})(PostsNew)
+})(
+  connect(null, { createPost })(PostsNew)
+)
 
 // When connect helper is used, we use map state to props and map dispatch to props
